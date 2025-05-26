@@ -1,0 +1,67 @@
+# ==========================
+# Python
+# ==========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pdb
+
+# ==========================
+# Entornos virtuales
+# ==========================
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# ==========================
+# Archivos de logs y bases temporales
+# ==========================
+*.log
+*.sqlite3
+*.db
+
+# ==========================
+# Configuración de editores
+# ==========================
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# ==========================
+# Herramientas de linters y pruebas
+# ==========================
+.mypy_cache/
+.ruff_cache/
+coverage.xml
+htmlcov/
+.pytest_cache/
+
+# ==========================
+# Build / dist (empaquetado)
+# ==========================
+build/
+dist/
+*.egg-info/
+.eggs/
+*.manifest
+*.spec
+
+# ==========================
+# Archivos sensibles
+# ==========================
+.env
+.env.*
+*.bak
+*.old
+*.secret
+
+# ==========================
+# Sistemas
+# ==========================
+.DS_Store
+Thumbs.db

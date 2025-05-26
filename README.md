@@ -34,7 +34,7 @@ Sentrix es una herramienta de línea de comandos para **escaneo** y **monitoreo 
    ```bash
    python -m venv .venv
    source .venv/bin/activate  # Linux/macOS
-   .\.venv\Scripts\activate   # Windows
+   .\.venv\Scripts\activate   # Windows (Si te arroja error intenta esto primero: Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process)
    ```
 3. Instala en modo editable:
 

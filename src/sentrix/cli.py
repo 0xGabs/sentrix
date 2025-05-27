@@ -1,21 +1,44 @@
 import argparse
 import logging
 import os
+
 from importlib.metadata import version as get_version
-from core.scanner import load_patterns, scan_file, print_findings
-from core.watcher import watch
+from sentrix.scanner import load_patterns, scan_file, print_findings
+from sentrix.watcher import watch
+from sentrix.config import SCAN_EXTENSIONS
 
 try:
     VERSION = get_version("sentrix")
 except Exception:
     VERSION = "dev"
 
+def scan_directory(path: str, patterns):
+    findings = []
+    for root, _, files in os.walk(path):
+        for file in files:
+            full_path = os.path.join(root, file)
+            if full_path.lower().endswith(tuple(SCAN_EXTENSIONS)):
+                findings.extend(scan_file(full_path, patterns))
+    return findings
+
+
+def handle_paths(paths, patterns):
+    findings = []
+    for path in paths:
+        if os.path.isdir(path):
+            findings.extend(scan_directory(path, patterns))
+        elif os.path.isfile(path):
+            findings.extend(scan_file(path, patterns))
+        else:
+            logging.warning(f"Invalid path: {path}")
+    return findings
+
 def main():
     parser = argparse.ArgumentParser(
         prog=f"Sentrix {VERSION}",
         description=(
             "Sentrix Sensitive file scanning and real-time monitoring\n"
-            "https://github.com/0xGabs/sentrix.git"
+            "https://github.com/0xGabs"
         ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
         usage="sentrix [OPTIONS] <paths...>"
@@ -44,13 +67,8 @@ def main():
         help="Enable real-time file watching and re-scan on changes."
     )
 
-    # === UTILITY FLAGS ===
-    util_group = parser.add_argument_group("UTILITY FLAGS")
-    util_group.add_argument(
-        "--verbose",
-        action="store_true",
-        help="Enable debug logging output."
-    )
+    # === UTILITY FLAG ===
+    util_group = parser.add_argument_group("UTILITY FLAG")
     util_group.add_argument(
         "--version",
         action="version",
@@ -62,7 +80,7 @@ def main():
     parser.epilog = """\
 EXAMPLES:
   sentrix ./src --patterns patterns/secrets.yaml
-      Scan all files inside ./src recursively using the provided YAML rules.
+      Scan files inside ./src recursively using the provided YAML rules.
 
   sentrix config.py main.py --patterns patterns/secrets.yaml
       Scan specific files.
@@ -70,28 +88,18 @@ EXAMPLES:
   sentrix ./app --patterns secrets.yaml --watch
       Watch ./app and re-scan on changes using secrets.yaml.
 
-  sentrix ./api --patterns patterns/secrets.yaml --verbose
-      Scan ./api and show debug logs.
 """
 
     args = parser.parse_args()
-
-    logging.basicConfig(
-        level=logging.DEBUG if args.verbose else logging.INFO,
-        format="%(asctime)s [%(levelname)s] %(message)s"
-    )
-
     patterns = load_patterns(args.patterns)
 
     if args.watch:
-        watch(args.paths, args.patterns)
+        watch(args.paths, patterns)
     else:
-        for path in args.paths:
-            if os.path.isfile(path) or os.path.isdir(path):
-                findings = scan_file(path, patterns)
-                print_findings(findings)
-            else:
-                logging.warning(f"Invalid path: {path}")
+        findings = handle_paths(args.paths, patterns)
+        if findings:
+            print_findings(findings)
+
 
 if __name__ == "__main__":
     main()

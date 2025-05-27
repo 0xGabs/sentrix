@@ -1,0 +1,44 @@
+[project]
+name = "sentrix"
+version = "0.1.0"
+description = "Sensitive file scanning and real-time monitoring CLI tool"
+authors = [
+  { name = "0xGabs" }
+]
+readme = "README.md"
+requires-python = ">=3.9"
+
+keywords = ["security", "cli", "scanner", "watchdog", "sensitive data"]
+
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Operating System :: OS Independent",
+  "Topic :: Security",
+  "Environment :: Console"
+]
+
+dependencies = [
+  "pyyaml",
+  "rich",
+  "watchdog"
+]
+
+[project.urls]
+Homepage = "https://github.com/0xGabs/sentrix.git"
+"Issue Tracker" = "https://github.com/0xGabs/sentrix/issues"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project.scripts]
+sentrix = "sentrix.cli:main"

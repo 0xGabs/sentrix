@@ -2,7 +2,7 @@
 
 *Hecho por 0xGabs*
 
-Sentrix es una herramienta de línea de comandos para **escaneo** y **monitoreo en tiempo real** de archivos, buscando patrones sensibles (contraseñas, secretos, configuraciones, etc.) definidos por el usuario.
+Sentrix es una herramienta de línea de comandos para **escaneo** y **monitoreo** de archivos, buscando patrones sensibles (contraseñas, secretos, configuraciones, etc.) definidos por el usuario.
 
 ---
 

@@ -118,12 +118,7 @@ patterns:
 
 ---
 
-5. **Control de versiones y commits**:
-
-   * Sigue [Conventional Commits](https://www.conventionalcommits.org/) para mensajes claros.
-   * Configura un gancho pre-commit (`pre-commit`) para automatizar checks antes de cada commit.
-
-6. **Colaboración**:
+ **Colaboración**:
 
    * Abre un *issue* para discutir cambios mayores.
    * Envía un *pull request* con una descripción clara del cambio y referencia al issue.

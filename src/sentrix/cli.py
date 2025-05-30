@@ -5,16 +5,20 @@ import os
 from importlib.metadata import version as get_version
 from sentrix.scanner import load_patterns, scan_file, print_findings
 from sentrix.watcher import watch
-from sentrix.config import SCAN_EXTENSIONS
+from sentrix.config import SCAN_EXTENSIONS, IGNORE_DIRS
 
 try:
     VERSION = get_version("sentrix")
 except Exception:
     VERSION = "dev"
 
-def scan_directory(path: str, patterns):
+def scan_directory(path: str, patterns, exclude_dirs=None):
+    if exclude_dirs is None:
+        exclude_dirs = []
+
     findings = []
-    for root, _, files in os.walk(path):
+    for root, dirs, files in os.walk(path):
+        dirs[:] = [d for d in dirs if d not in exclude_dirs]
         for file in files:
             full_path = os.path.join(root, file)
             if full_path.lower().endswith(tuple(SCAN_EXTENSIONS)):
@@ -22,13 +26,13 @@ def scan_directory(path: str, patterns):
     return findings
 
 
-def handle_paths(paths, patterns):
+def handle_paths(paths, patterns, exclude_dirs=None):
     findings = []
     for path in paths:
-        if os.path.isdir(path):
-            findings.extend(scan_directory(path, patterns))
-        elif os.path.isfile(path):
+        if os.path.isfile(path):
             findings.extend(scan_file(path, patterns))
+        elif os.path.isdir(path):
+            findings.extend(scan_directory(path, patterns, exclude_dirs=exclude_dirs))
         else:
             logging.warning(f"Invalid path: {path}")
     return findings
@@ -66,6 +70,12 @@ def main():
         action="store_true",
         help="Enable real-time file watching and re-scan on changes."
     )
+    behavior_group.add_argument(
+        "--exclude",
+        nargs="+",
+        metavar="DIR",
+        help="Directory name(s) to exclude from recursive scan."
+    )
 
     # === UTILITY FLAG ===
     util_group = parser.add_argument_group("UTILITY FLAG")
@@ -88,6 +98,8 @@ EXAMPLES:
   sentrix ./app --patterns secrets.yaml --watch
       Watch ./app and re-scan on changes using secrets.yaml.
 
+  sentrix ./app --patterns secrets.yaml --exclude venv __pycache__
+      Watch .app excluding the venv and __pycache__ directories.
 """
 
     args = parser.parse_args()
@@ -96,7 +108,7 @@ EXAMPLES:
     if args.watch:
         watch(args.paths, patterns)
     else:
-        findings = handle_paths(args.paths, patterns)
+        findings = handle_paths(args.paths, patterns, exclude_dirs=args.exclude or [])
         if findings:
             print_findings(findings)
 

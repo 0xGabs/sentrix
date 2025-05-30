@@ -77,6 +77,12 @@ O múltiples rutas al mismo tiempo:
 sentrix ./src ./tests ./api.py --patterns patrones.yaml
 ```
 
+Ignorar carpeta como venv o node_modules
+
+```bash
+sentrix ./mi_app --patterns patrones.yaml --exclude venv node_modules
+```
+
 ### 2. Monitoreo en tiempo real
 
 ```bash
